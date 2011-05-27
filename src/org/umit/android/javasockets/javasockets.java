@@ -54,16 +54,11 @@ public class javasockets extends Activity {
         
     }
     
-    private OnClickListener ping_reachable = new OnClickListener() {
-        public void onClick(View v) {
-        	checkReachable(serverip);
-        }
-    };
-    
+    //isReachable
     private void checkReachable(String address)
     {
     	try {	
-        	InetAddress addr = InetAddress.getByName(serverip);
+        	InetAddress addr = InetAddress.getByName(address);
         	boolean reachable = addr.isReachable(2000);
         	Log.e("JAVASOCKET TEST isReachable", "Result = " + reachable);
         }
@@ -73,12 +68,7 @@ public class javasockets extends Activity {
         }
     }
     
-    private OnClickListener socket_ping = new OnClickListener() {
-        public void onClick(View v) {
-        	ping_socket(serverip);
-        }
-    };
-    
+    //Socket Ping - Port 13
     private void ping_socket(String addr)
     {
     	InetSocketAddress address;
@@ -104,6 +94,51 @@ public class javasockets extends Activity {
 		}
     }    
     
+    //Echo ping using datagram channel - port 7
+    private void ping_echo(String address)
+    {
+    	try {
+    		ByteBuffer msg = ByteBuffer.wrap("Hello".getBytes());
+    		ByteBuffer response = ByteBuffer.allocate("Hello".getBytes().length);
+    		
+    		InetSocketAddress sockaddr = new InetSocketAddress(address, 7);
+    		DatagramChannel dgc = DatagramChannel.open();
+    		dgc.configureBlocking(false);
+    		dgc.connect(sockaddr);
+    		dgc.send(msg, sockaddr);
+    		Thread.sleep(1000);
+    		dgc.receive(response);
+    		
+    		String received = new String(response.array());
+			Log.e("JAVASOCKET TEST echo_ping", received);
+    		}
+    	catch (Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    }
+
+    //ping using the shell command
+    private void ping_shell(String address)
+    {
+    	ping_thread t = new ping_thread(address);
+    	t.run();
+    }
+
+    
+    //---------onClick Event Handlers-----------//
+    private OnClickListener ping_reachable = new OnClickListener() {
+        public void onClick(View v) {
+        	checkReachable(serverip);
+        }
+    };
+        
+    private OnClickListener socket_ping = new OnClickListener() {
+        public void onClick(View v) {
+        	ping_socket(serverip);
+        }
+    };
+        
     private OnClickListener network_interfaces = new OnClickListener() {
         public void onClick(View v) {
         	try {
@@ -135,41 +170,12 @@ public class javasockets extends Activity {
         }
     };
     
-    private void ping_echo(String address)
-    {
-    	try {
-    		ByteBuffer msg = ByteBuffer.wrap("Hello".getBytes());
-    		ByteBuffer response = ByteBuffer.allocate("Hello".getBytes().length);
-    		
-    		InetSocketAddress sockaddr = new InetSocketAddress(serverip, 7);
-    		DatagramChannel dgc = DatagramChannel.open();
-    		dgc.configureBlocking(false);
-    		dgc.connect(sockaddr);
-    		dgc.send(msg, sockaddr);
-    		Thread.sleep(1000);
-    		dgc.receive(response);
-    		
-    		String received = new String(response.array());
-			Log.e("JAVASOCKET TEST echo_ping", received);
-    		}
-    	catch (Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    }
-
     private OnClickListener command_ping = new OnClickListener() {
         public void onClick(View v) {
         	ping_shell(serverip);
         }
     };
-    
-    private void ping_shell(String address)
-    {
-    	ping_thread t = new ping_thread(address);
-    	t.run();
-    }
-    
+        
     private OnClickListener native_ping = new OnClickListener() {
         public void onClick(View v) {
         }
