@@ -21,7 +21,8 @@ public class javasockets extends Activity {
     
 	//yahoo's ip address
 	public static String serverip = "67.195.160.76";
-   	
+   	Process p;
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +45,13 @@ public class javasockets extends Activity {
         sockping.setOnClickListener(socket_ping);
                 
         //Ping shell command
+        Button pingshell = (Button)findViewById(R.id.command_ping);
+        pingshell.setOnClickListener(command_ping);
+               
         //C code ping
+        Button pingnative = (Button)findViewById(R.id.native_ping);
+        pingnative.setOnClickListener(native_ping);
+        
     }
     
     private OnClickListener ping_reachable = new OnClickListener() {
@@ -105,12 +112,13 @@ public class javasockets extends Activity {
         			Log.e("JAVASOCKET TEST network_interfaces", "display name " + i.getDisplayName());        			
         			for(Enumeration<InetAddress> addresses = i.getInetAddresses(); addresses.hasMoreElements();)
         			{
-        				String address = addresses.nextElement().toString();
-        				Log.e("JAVASOCKET TEST InetAddress", address.substring(1));
+        				String address = addresses.nextElement().toString().substring(1);
+        				Log.e("JAVASOCKET TEST InetAddress", address);
         				
-        				ping_echo(address.substring(1));
-        				checkReachable(address.substring(1));
-        				ping_socket(address.substring(1));
+        				ping_echo(address);
+        				checkReachable(address);
+        				ping_socket(address);
+        				ping_shell(address);
         			}
         		}
         	}
@@ -149,4 +157,21 @@ public class javasockets extends Activity {
     		e.printStackTrace();
     	}
     }
-}
+
+    private OnClickListener command_ping = new OnClickListener() {
+        public void onClick(View v) {
+        	ping_shell(serverip);
+        }
+    };
+    
+    private void ping_shell(String address)
+    {
+    	ping_thread t = new ping_thread(address);
+    	t.run();
+    }
+    
+    private OnClickListener native_ping = new OnClickListener() {
+        public void onClick(View v) {
+        }
+    };   
+}//class

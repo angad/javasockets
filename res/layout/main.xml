@@ -26,5 +26,13 @@
     android:id="@+id/socket_ping" 
     android:layout_width="wrap_content" 
     android:layout_height="wrap_content"/>
+<Button android:text="Commandline ping"
+    android:id="@+id/command_ping" 
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"/>
+<Button android:text="Native C Ping"
+    android:id="@+id/native_ping" 
+    android:layout_width="wrap_content" 
+    android:layout_height="wrap_content"/>
 
 </LinearLayout>
