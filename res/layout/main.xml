@@ -3,7 +3,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" android:orientation="vertical">
 <EditText android:id="@+id/ip" 
-android:text="67.195.160.76" 
+android:text="74.207.244.221" 
 android:layout_width="match_parent" 
 android:layout_height="wrap_content" android:layout_weight="1">
 </EditText>

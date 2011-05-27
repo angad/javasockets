@@ -4,8 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import android.util.Log;
-
 public class ping_thread implements Runnable{
 
 	String address;
@@ -31,7 +29,7 @@ public class ping_thread implements Runnable{
     		while ((inputLine = in.readLine()) != null) 
     		{
     			i++;
-    			if(i==5) break;
+    			if(i==5) break; 
     			javasockets.showResult("shell ping", inputLine);
     			//pingResult += inputLine;
     		}

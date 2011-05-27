@@ -72,7 +72,7 @@ public class javasockets extends Activity {
     	try {
     		showResult("Pinging " + address, "");
         	InetAddress addr = InetAddress.getByName(address);
-        	boolean reachable = addr.isReachable(2000);
+        	boolean reachable = addr.isReachable(10000);
         	showResult("isReachable", " " + reachable);
         }
         catch (Exception e)
@@ -93,10 +93,16 @@ public class javasockets extends Activity {
 				channel = SocketChannel.open();
 				channel.configureBlocking(false);
 				boolean connected = channel.connect(address);
-				if(connected) {
+				
+				try {
+					Thread.sleep(10000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+								
+				if(channel.isConnected()) {
 					channel.close();
-					Log.e("JAVASOCKET TEST socket_ping", "connected");	
-					showResult("socket_ping", "false");
+					showResult("socket_ping", "connected");
 				}
 				else showResult("socket_ping", "not connected");
 				
@@ -122,7 +128,7 @@ public class javasockets extends Activity {
     		dgc.configureBlocking(false);
     		dgc.connect(sockaddr);
     		dgc.send(msg, sockaddr);
-    		Thread.sleep(1000);
+    		Thread.sleep(5000);
     		dgc.receive(response);
     		
     		String received = new String(response.array());
@@ -249,5 +255,4 @@ public class javasockets extends Activity {
     	Log.e("JAVASOCKET TEST", method + " " + msg);
     	t.append(method + ": " + msg + "\n");
     }
-    
 }//class
