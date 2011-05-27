@@ -25,7 +25,7 @@ public class javasockets extends Activity {
     
 	//yahoo's ip address
 	public static String serverip = "67.195.160.76";
-	TextView t;
+	public static TextView t;
 	EditText ip;
    	Process p;
 	
@@ -159,7 +159,6 @@ public class javasockets extends Activity {
     	}
     }
 
-    
     //---------onClick Event Handlers-----------//
     private OnClickListener ping_reachable = new OnClickListener() {
         public void onClick(View v) {
@@ -235,7 +234,7 @@ public class javasockets extends Activity {
     
     private static int line_count = 0;
     private static boolean isFull = false;
-    private void showResult(String method, String msg)
+    public static void showResult(String method, String msg)
     {
     	if(line_count == 5 || isFull)
     	{

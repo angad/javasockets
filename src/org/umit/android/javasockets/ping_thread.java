@@ -32,7 +32,7 @@ public class ping_thread implements Runnable{
     		{
     			i++;
     			if(i==5) break;
-    			Log.e("JAVASOCKET TEST shell_ping", inputLine);
+    			javasockets.showResult("shell ping", inputLine);
     			//pingResult += inputLine;
     		}
     		in.close();
