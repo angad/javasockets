@@ -43,11 +43,13 @@ import android.content.Context;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -59,10 +61,13 @@ public class javasockets extends Activity {
 	public static TextView t;
 	EditText ip;
    	Process p;
+   	//public static ProgressBar progress;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        
         setContentView(R.layout.main);
         
         ip = (EditText)findViewById(R.id.ip);
@@ -73,6 +78,8 @@ public class javasockets extends Activity {
         
         t = (TextView)findViewById(R.id.msg);
         t.setText(macaddr);
+        
+        //progress = (ProgressBar)findViewById(R.id.progress);
         
         //isReachable
         Button reachable = (Button)findViewById(R.id.ping_reachable);
@@ -105,6 +112,13 @@ public class javasockets extends Activity {
         hosts.setOnClickListener(discovery);
     }
     
+    /*
+    public static void updateProgressBar(int l)
+    {
+    	progress.setProgress(progress.getProgress() + l);
+    }
+    */
+    
     //Gets WIFI MAC address
     private String getMACaddr() 
     {
@@ -115,41 +129,39 @@ public class javasockets extends Activity {
     }
 
 	//isReachable
-    public static void checkReachable(String address)
+    public static boolean checkReachable(String address)
     {
+    	boolean reachable = false;
     	try {
-    		showResult("Pinging " + address, "");
         	InetAddress addr = InetAddress.getByName(address);
-        	boolean reachable = addr.isReachable(1000);
-        	showResult("isReachable", " " + reachable);
+        	reachable = addr.isReachable(1000);
         }
         catch (Exception e)
         {
         	e.printStackTrace();
         }
+		return reachable;
     }
     
     //Socket Ping - Port 13
-    public static void ping_socket(String addr)
+    public static boolean ping_socket(String addr)
     {
-    	showResult("Pinging " + addr, "");
     	InetSocketAddress address;
     	SocketChannel channel = null;
+    	boolean connected = false;
+    	
     	try {
 			address = new InetSocketAddress(InetAddress.getByName(addr), 13);
 			try {
 				channel = SocketChannel.open();
 				channel.configureBlocking(false);
-				boolean connected = channel.connect(address);
+				connected = channel.connect(address);
 				
 				try {
 					Thread.sleep(10000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
-				}
-								
-				showResult("socket_ping", connected + "");
-				
+				}				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -157,13 +169,14 @@ public class javasockets extends Activity {
     	catch (UnknownHostException e) {
 			e.printStackTrace();
 		}
+    	return connected;
     }    
     
     //Echo ping using datagram channel - port 7
-    public static void ping_echo(String address)
+    public static boolean ping_echo(String address)
     {
+    	boolean r = false;
     	try {
-    		showResult("Pinging " + address, "");
     		ByteBuffer msg = ByteBuffer.wrap("Hello".getBytes());
     		ByteBuffer response = ByteBuffer.allocate("Hello".getBytes().length);
     		
@@ -176,38 +189,37 @@ public class javasockets extends Activity {
     		dgc.receive(response);
     		
     		String received = new String(response.array());
-			showResult("echo_ping", received);
+    		if(received == "")
+    			r = false;
+    		else r = true;
     		}
     	catch (Exception e)
     	{
     		e.printStackTrace();
     	}
+    	return r;
     }
 
     //ping using the shell command
     public static void ping_shell(String address)
     {
-    	showResult("Pinging " + address, "");
     	ping_thread t = new ping_thread(address);
     	t.run();
     }
     
     //port 80 TCP connect
-    public static void socket_tcp(String address)
+    public static boolean socket_tcp(String address)
     {
-    	showResult("TCP Socket to ", address);
+    	boolean connected = false;
     	try{
     		Socket s = new Socket(address, 80);
-    		if(s.isConnected())
-    		{
-    			showResult("socket_tcp", "connected");
-    		}
-    		else showResult("socket_tcp", "not connected");
+    		connected = s.isConnected();
     	}
-    	
     	catch(Exception e){
     		e.printStackTrace();
     	}
+    	
+    	return connected;
     }
     
     //get network interface information
@@ -252,6 +264,13 @@ public class javasockets extends Activity {
     	showResult("lease Duration ", leaseDuration);
     	showResult("netmask ", netmask);
     	showResult("serverAddress ", serverAddress);
+    	
+    	SubnetUtils su = new SubnetUtils(getIP(), getNetmask());
+    	SubnetInfo si = su.getInfo();
+    	
+    	showResult("High Address", si.getHighAddress());
+    	showResult("Low Address", si.getLowAddress());
+    	
     }
     
     //converts integer to IP
@@ -318,19 +337,24 @@ public class javasockets extends Activity {
     	showResult("Low Address", si.getLowAddress());
     	
     	String[] all = si.getAllAddresses();
-    	
-    	
+ 
     	for(int i=0; i<all.length; i++)
     	{
-    			showResult("Scanning ", all[i]);	
-    			scan(all[i]);
+    		try {
+    			//If a lot of threads are requested immediately, they are rejected by AsyncTask.
+    			//Need to have some rate controller
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+    		scan(all[i]);
     	}	
     }
     
     private void scan(String ip)
     {
-    	scan_thread t = new scan_thread(ip, 1);
-    	t.run();
+    	AsyncTask<String, Void, String> sa = new scan_async();
+    	sa.execute(ip);
     }
     
     //---------onClick Event Handlers-----------//
@@ -338,7 +362,9 @@ public class javasockets extends Activity {
         public void onClick(View v) {
             Editable host = ip.getText();
             serverip = host.toString();
-        	checkReachable(serverip);
+    		showResult("Pinging " + serverip, "");
+    		boolean success = checkReachable(serverip);
+    		showResult("isReachable ", success + "");
         }
     };
         
@@ -346,7 +372,9 @@ public class javasockets extends Activity {
         public void onClick(View v) {
             Editable host = ip.getText();
             serverip = host.toString();
-        	ping_socket(serverip);
+            showResult("Pinging " + serverip, "");
+        	boolean success = ping_socket(serverip);
+        	showResult("Socket Ping", success + "");
         }
     };
         
@@ -360,8 +388,9 @@ public class javasockets extends Activity {
         public void onClick(View v) {
             Editable host = ip.getText();
             serverip = host.toString();
-
-        	ping_echo(serverip);
+            showResult("Pinging " + serverip, "");
+            boolean success = ping_echo(serverip);
+            showResult("Echo ping ", success + "");
         }
     };
     
@@ -369,6 +398,7 @@ public class javasockets extends Activity {
         public void onClick(View v) {
             Editable host = ip.getText();
             serverip = host.toString();
+            showResult("Pinging " + serverip, "");
         	ping_shell(serverip);
         }
     };
@@ -377,7 +407,9 @@ public class javasockets extends Activity {
         public void onClick(View v) {
             Editable host = ip.getText();
             serverip = host.toString();
-            socket_tcp(serverip);
+            showResult("Pinging " + serverip, "");
+        	boolean success = socket_tcp(serverip);
+        	showResult("TCP Socket", success + "");
         }
     };
     
@@ -392,13 +424,12 @@ public class javasockets extends Activity {
         	host_discovery();
         }
     };
-
     
     private static int line_count = 0;
     private static boolean isFull = false;
     public static void showResult(String method, String msg)
     {
-    	if(line_count == 8 || isFull)
+    	if(line_count == 11	 || isFull)
     	{
     		String txt = t.getText().toString();
     		txt = txt.substring(txt.indexOf('\n') + 1);

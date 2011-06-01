@@ -32,7 +32,6 @@ public class scan_thread implements Runnable{
 		this.method = method;
 	}
 	
-	
 	@Override
 	public void run() {
 		
