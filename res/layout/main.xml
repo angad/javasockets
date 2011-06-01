@@ -11,6 +11,7 @@ android:layout_weight="1" android:layout_height="50dip">
     android:layout_width="fill_parent" 
     android:text="Debug" android:layout_weight="1" android:isScrollContainer="true" android:layout_height="200dip"/>
 <TableLayout android:layout_height="wrap_content" android:layout_width="match_parent" android:id="@+id/tableLayout1">
+    <Button android:text="Host Discovery" android:layout_height="wrap_content" android:id="@+id/host_discovery" android:layout_width="wrap_content"></Button>
     <TableRow android:layout_height="wrap_content" android:id="@+id/tableRow2" android:layout_width="wrap_content">
         <Button android:layout_weight="1" android:text="Wifi Info" android:id="@+id/wifi_info" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
         <Button android:layout_weight="1" android:text="Network Interfaces" android:id="@+id/network_interfaces" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
