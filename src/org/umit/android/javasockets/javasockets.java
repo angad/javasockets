@@ -57,13 +57,16 @@ import android.widget.TextView;
 public class javasockets extends Activity {
     
 	public static String serverip;
+	public static int time_to_live;
+	
 	public static TextView t;
 	EditText ip;
    	Process p;
    	public static ProgressBar progress;
    	
    	public static int hosts_found = 0;
-	
+	EditText ttl_t;
+   	
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,6 +77,10 @@ public class javasockets extends Activity {
         ip = (EditText)findViewById(R.id.ip);
         Editable host = ip.getText();
         serverip = host.toString();	
+        
+        ttl_t = (EditText)findViewById(R.id.ttl);
+        Editable time = ttl_t.getText();
+        time_to_live = Integer.parseInt(time.toString());
         
         String macaddr = "MAC Address : " + getMACaddr() + "\n";
         
@@ -153,7 +160,7 @@ public class javasockets extends Activity {
     	boolean reachable = false;
     	try {
         	InetAddress addr = InetAddress.getByName(address);
-        	reachable = addr.isReachable(ttl.is_reachable);
+        	reachable = addr.isReachable(time_to_live);
         }
         catch (Exception e)
         {
@@ -177,7 +184,7 @@ public class javasockets extends Activity {
 				connected = channel.connect(address);
 				
 				try {
-					Thread.sleep(ttl.socket_ping);
+					Thread.sleep(time_to_live);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}				
@@ -204,7 +211,7 @@ public class javasockets extends Activity {
     		dgc.configureBlocking(false);
     		dgc.connect(sockaddr);
     		dgc.send(msg, sockaddr);
-    		Thread.sleep(ttl.socket_ping);
+    		Thread.sleep(time_to_live);
     		dgc.receive(response);
     		
     		String received = new String(response.array());
