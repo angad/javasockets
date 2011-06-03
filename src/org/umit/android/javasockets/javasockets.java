@@ -135,6 +135,12 @@ public class javasockets extends Activity {
         	javasockets.showResult("Discovered", javasockets.hosts_found + " hosts");
     }
     
+    public static void fillProgressBar()
+    {
+    	resetProgressBar();
+    	updateProgressBar(100);
+    }
+    
     //Gets WIFI MAC address
     private String getMACaddr() 
     {
@@ -339,43 +345,10 @@ public class javasockets extends Activity {
     //Host discovery using arp cache at /proc/net/arp
     public static void read_arp()
     {
-    	hosts_found = 0;
-    	try {
-			BufferedReader br = new BufferedReader(new FileReader("/proc/net/arp"));
-			String line;
-			try 
-			{
-				while((line = br.readLine()) != null)
-				{
-					 String[] splitted = line.split(" +");
-					 if (splitted != null && splitted.length >= 4) 
-					 {
-						 // Basic sanity check
-						 String mac = splitted[3];
-						 String ip = splitted[0];
-						 if (mac.matches("..:..:..:..:..:..") && !mac.equals("00:00:00:00:00:00")) 
-						 {
-							 hosts_found ++;
-							 showResult(ip, mac);
-						 }
-					 }
-				}
-			}
-			catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
-		} 
-    	catch (FileNotFoundException e) 
-    	{
-			e.printStackTrace();
-		}
-		showResult("ARP", hosts_found + " hosts found");
+    	AsyncTask<Void, String, Integer> aa = new arp_async();
+    	aa.execute();
     }
     
-    private void getMAC_arpcache(String ip)
-    {
-    }
     
     //---------onClick Event Handlers-----------//
     private OnClickListener ping_reachable = new OnClickListener() {
