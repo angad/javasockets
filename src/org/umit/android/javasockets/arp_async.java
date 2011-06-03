@@ -17,7 +17,7 @@ public class arp_async extends AsyncTask<Void, String, Integer> {
 	    	try {
 				BufferedReader br = new BufferedReader(new FileReader("/proc/net/arp"));
 				String line;
-				try 
+				try
 				{
 					while((line = br.readLine()) != null)
 					{
@@ -34,6 +34,7 @@ public class arp_async extends AsyncTask<Void, String, Integer> {
 							 }
 						 }
 					}
+					publishProgress("0", hosts_found + "");
 					br.close();
 				}
 				catch (IOException e) 
@@ -44,22 +45,28 @@ public class arp_async extends AsyncTask<Void, String, Integer> {
 	    	catch (FileNotFoundException e) 
 	    	{
 				e.printStackTrace();
-			}
-	    	
+			}	
 	    	return hosts_found;
 		}
 		
 		protected void onProgressUpdate(String... params) 
-		{
+		{	
 			String ip = params[0];
 			String mac = params[1];
-			javasockets.showResult(ip, mac);
-			javasockets.updateProgressBar(1);
+			
+			if(ip.equals("0"))
+			{
+				javasockets.fillProgressBar();
+				javasockets.showResult("ARP" , "found " + params[1] + " hosts");
+			}
+			else {
+				javasockets.showResult(ip, mac);
+				javasockets.updateProgressBar(1);
+			}
 		}
 		
 		protected void onPostExecute(Integer... params)
 		{
-			javasockets.fillProgressBar();
-			javasockets.showResult("ARP" , "found " + params[0] + " hosts");
+			//...
 		}
 }

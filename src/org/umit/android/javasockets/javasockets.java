@@ -23,9 +23,6 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 package org.umit.android.javasockets;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -131,7 +128,7 @@ public class javasockets extends Activity {
     
     public static void progressBar_isFull()
     {
-    	if(progress.getProgress() == 100)
+    	if(progress.getProgress() > 99)
         	javasockets.showResult("Discovered", javasockets.hosts_found + " hosts");
     }
     
@@ -349,7 +346,7 @@ public class javasockets extends Activity {
     	aa.execute();
     }
     
-    
+    	
     //---------onClick Event Handlers-----------//
     private OnClickListener ping_reachable = new OnClickListener() {
         public void onClick(View v) {
