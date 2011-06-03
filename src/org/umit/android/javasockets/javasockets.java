@@ -233,16 +233,25 @@ public class javasockets extends Activity {
     	t.run();
     }
     
-    //port 80 TCP connect
+    //TCP Connect test on multiple ports
     public static boolean socket_tcp(String address)
-    {
+    {    	
     	boolean connected = false;
-    	try{
-    		Socket s = new Socket(address, 80);
-    		connected = s.isConnected();
-    	}
-    	catch(Exception e){
-    		e.printStackTrace();
+    
+    	for(int i = 0; i < ports.port.length; i++)
+    	{
+    		try
+    		{
+    			Socket s = new Socket();
+    			s.bind(null);
+    			s.connect(new InetSocketAddress(address, ports.port[i]), time_to_live);
+    			connected = s.isConnected();
+    			s.close();
+    		}
+    		catch(Exception e){
+    			e.printStackTrace();
+    		}
+    		if(connected) return connected;
     	}
     	return connected;
     }

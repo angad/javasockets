@@ -12,3 +12,12 @@ interface ttl {
 	public static final int echo_ping = 5000;
 	public static final int socket_ping = 1000;
 }
+
+interface ports{
+	public static final int[] port = {
+		139,
+		445,
+		22,
+		80
+	};
+}
