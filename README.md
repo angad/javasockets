@@ -4,33 +4,16 @@ Testing different methods for Host Discovery.
 
 ##Host Discovery
 Uses isReachable ping to scan the network. Uses SubnetUtils to get the range of IP addresses to scan.  
+Insane mode - pings using all the available methods - multi-port TCP Socket, UDP Channel and ICMP ping, isReachable.
 Gets the subnet mask and the ip address from WifiInfo.
 
 ##Wifi Info
-Shows various Wifi Connection parameters.
+Shows various Wifi Connection parameters.  
 
-##Network interfaces
-Gets the network interfaces and their ip addresses available for the device. 
-
-##isReachable
-Pings using isReachable method
-
-##Echo ping
-Ping using port 7 UDP echo (Datagram Channel)
-
-##Socket ping
-Port 13 socket channel ping
-
-##Commandline ping
-Using the shell command ping
-
-##TCP Socket
-Opens a TCP socket on port 80
+##ARP
+After doing a normal Host Discovery, which usually returns ~80% accurate results, if ARP method is used, it returns full accurate Host Discovery result based on the /proc/net/arp cache.  
 
 #TODO
-1) Add TTL setting  
-2) Use other methods for Host Discovery as well  
-3) Current UI hangs when doing Host Discovery. Improve Async Task  
-4) Improve scanning for larger number of hosts  
-5) Add option for scanning a specific range of hosts
-
+1) Improve scanning for larger number of hosts  
+2) Add option for scanning a specific range of hosts
+3) Add raw packet ping (Native code)

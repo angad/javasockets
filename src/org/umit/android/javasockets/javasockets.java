@@ -357,28 +357,7 @@ public class javasockets extends Activity {
         	Editable host = ip.getText();
             serverip = host.toString();
          	AsyncTask<String, String, String> sa = new pingall_async();
-	    	sa.execute(serverip);
-       
-            /*
-         	boolean success;
-    		showResult("Pinging " + serverip, "");
-            
-            showResult("Method", "isReachable");
-    		success = checkReachable(serverip);
-    		showResult("isReachable ", success + "");
-    		
-            showResult("Method", "SocketChannel Port 13");
-        	success = ping_socket(serverip);
-        	showResult("Port 13 Ping", success + "");
-
-            showResult("Method", "UDP Channel");
-            success = ping_echo(serverip);
-            showResult("Echo ping ", success + "");
-
-            showResult("Method", "TCP Socket");
-            success = socket_tcp(serverip);
-        	showResult("TCP Socket", success + "");
-        	*/
+	    	sa.execute(serverip);       
         }
     };
     
@@ -410,7 +389,6 @@ public class javasockets extends Activity {
         	read_arp();
         }
     };
-    
     
     //The Debug TextView controller
     private static int line_count = 0;
