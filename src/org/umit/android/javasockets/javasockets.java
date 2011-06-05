@@ -2,8 +2,9 @@
 Various methods of Android Ping
 Network Information, Host Discovery
 
-Copyright (C) 2011 Angad Singh
-angad@angad.sg
+Copyright (C) 2011 Adriano Monteiro Marques
+
+Author: Angad Singh <angad@angad.sg>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
